@@ -166,17 +166,9 @@ export default function Portfolio() {
                   {/* Profile Image */}
                   <div className="relative flex-shrink-0">
                     <div className="w-24 h-24 md:w-32 md:h-32 rounded-2xl overflow-hidden bg-primary/10">
-                      {project.profileImage ? (
-                        <img
-                          src={project.profileImage}
-                          alt={project.client}
-                          className="w-full h-full object-cover"
-                        />
-                      ) : (
-                        <div className="w-full h-full flex items-center justify-center text-primary/40">
-                          <Users size={32} />
-                        </div>
-                      )}
+                      <div className="w-full h-full flex items-center justify-center text-primary/40">
+                        <Users size={32} />
+                      </div>
                     </div>
                     <div className="absolute -bottom-2 -right-2 w-8 h-8 bg-primary rounded-full flex items-center justify-center">
                       <Star size={14} className="text-white fill-white" />
