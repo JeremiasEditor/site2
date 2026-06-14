@@ -29,11 +29,11 @@ export default function LoadingScreen() {
             >
               <div className="absolute inset-0 rounded-full bg-primary/20 blur-3xl animate-pulse-glow" />
               <motion.span
-                className="relative text-5xl md:text-7xl font-bold tracking-tighter gradient-text"
+                className="relative text-4xl md:text-6xl font-bold tracking-tighter gradient-text"
                 animate={{ opacity: [0.5, 1, 0.5] }}
                 transition={{ duration: 2, repeat: Infinity }}
               >
-                J
+                J<span className="text-white/30 font-light text-2xl md:text-3xl"> &amp; co.</span>
               </motion.span>
             </motion.div>
 
