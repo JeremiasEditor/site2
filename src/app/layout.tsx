@@ -15,30 +15,34 @@ const geistMono = localFont({
 });
 
 export const metadata: Metadata = {
-  title: "Jeremias — Editor de Vídeo Profissional | Edição Cinematográfica",
+  title: "Jeremias & co. — Studio de Edição de Vídeo | Máquinas de Retenção",
   description:
-    "Transformando vídeos comuns em experiências cinematográficas. Edição profissional para YouTube, Instagram, Reels, documentários e conteúdo de alta retenção.",
+    "Transformando vídeos comuns em máquinas de retenção. Edição profissional para YouTube, Instagram, Reels, criativos e conteúdo de alta retenção. 150+ projetos entregues.",
   keywords: [
     "editor de vídeo",
     "edição profissional",
     "edição cinematográfica",
     "YouTube editor",
     "Jeremias editor",
+    "Jeremias & co",
+    "studio de edição",
+    "retenção de vídeo",
     "video editing",
+    "criativos",
   ],
-  authors: [{ name: "Jeremias" }],
+  authors: [{ name: "Jeremias Bruno" }],
   openGraph: {
-    title: "Jeremias — Editor de Vídeo Profissional",
+    title: "Jeremias & co. — Studio de Edição de Vídeo",
     description:
-      "Edição cinematográfica profissional. +100 projetos entregues.",
+      "Transformando vídeos comuns em máquinas de retenção. 150+ projetos entregues.",
     type: "website",
     locale: "pt_BR",
   },
   twitter: {
     card: "summary_large_image",
-    title: "Jeremias — Editor de Vídeo Profissional",
+    title: "Jeremias & co. — Studio de Edição de Vídeo",
     description:
-      "Edição cinematográfica profissional. +100 projetos entregues.",
+      "Transformando vídeos comuns em máquinas de retenção. 150+ projetos entregues.",
   },
 };
 

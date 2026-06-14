@@ -2,24 +2,28 @@
 
 import { motion, useInView } from "framer-motion";
 import { useRef, useEffect, useState } from "react";
-import { Play, MessageCircle } from "lucide-react";
+import { Play, MessageCircle, Clapperboard } from "lucide-react";
 import Particles from "./Particles";
 
 function AnimatedCounter({
   target,
   suffix = "",
   prefix = "",
+  isText = false,
+  textValue = "",
 }: {
   target: number;
   suffix?: string;
   prefix?: string;
+  isText?: boolean;
+  textValue?: string;
 }) {
   const [count, setCount] = useState(0);
   const ref = useRef<HTMLSpanElement>(null);
   const inView = useInView(ref, { once: true });
 
   useEffect(() => {
-    if (!inView) return;
+    if (!inView || isText) return;
     let start = 0;
     const duration = 2000;
     const increment = target / (duration / 16);
@@ -33,7 +37,11 @@ function AnimatedCounter({
       }
     }, 16);
     return () => clearInterval(timer);
-  }, [inView, target]);
+  }, [inView, target, isText]);
+
+  if (isText) {
+    return <span ref={ref}>{textValue}</span>;
+  }
 
   return (
     <span ref={ref}>
@@ -45,18 +53,20 @@ function AnimatedCounter({
 }
 
 const stats = [
-  { value: 100, prefix: "+", suffix: "", label: "Projetos Entregues" },
-  {
-    value: 300,
-    prefix: "+",
-    suffix: "%",
-    label: "Aumento Médio de Engajamento",
-  },
-  { value: 5, prefix: "+", suffix: "", label: "Países Alcançados" },
+  { value: 150, prefix: "", suffix: "+", label: "Projetos Entregues", isText: false, textValue: "" },
+  { value: 0, prefix: "", suffix: "", label: "Visualizações Geradas", isText: true, textValue: "+1m views" },
+  { value: 300, prefix: "+", suffix: "%", label: "Aumento Médio de Engajamento", isText: false, textValue: "" },
 ];
 
 export default function Hero() {
   const ref = useRef(null);
+  const videoRef = useRef<HTMLVideoElement>(null);
+
+  useEffect(() => {
+    if (videoRef.current) {
+      videoRef.current.play().catch(() => {});
+    }
+  }, []);
 
   return (
     <section
@@ -64,15 +74,36 @@ export default function Hero() {
       ref={ref}
       className="relative min-h-screen flex flex-col items-center justify-center overflow-hidden"
     >
-      {/* Background layers */}
+      {/* Video background */}
       <div className="absolute inset-0 bg-dark" />
-      <div className="absolute inset-0 bg-[radial-gradient(ellipse_at_center,rgba(255,27,27,0.08)_0%,transparent_70%)]" />
-      <div className="absolute top-0 left-1/2 -translate-x-1/2 w-[800px] h-[800px] bg-primary/5 rounded-full blur-[120px]" />
-      <div className="absolute bottom-0 right-0 w-[400px] h-[400px] bg-primary/3 rounded-full blur-[100px]" />
+      <video
+        ref={videoRef}
+        className="absolute inset-0 w-full h-full object-cover opacity-30"
+        src="/assets/reel.mp4"
+        autoPlay
+        muted
+        loop
+        playsInline
+        preload="auto"
+      />
+
+      {/* Texture overlay */}
+      <div
+        className="absolute inset-0 opacity-20 mix-blend-overlay"
+        style={{
+          backgroundImage: "url('/assets/texture.png')",
+          backgroundRepeat: "repeat",
+          backgroundSize: "300px 300px",
+        }}
+      />
+
+      {/* Dark gradient overlay */}
+      <div className="absolute inset-0 bg-gradient-to-b from-dark/70 via-dark/50 to-dark/80" />
+      <div className="absolute inset-0 bg-[radial-gradient(ellipse_at_center,rgba(255,27,27,0.10)_0%,transparent_70%)]" />
 
       {/* Grid overlay */}
       <div
-        className="absolute inset-0 opacity-[0.03]"
+        className="absolute inset-0 opacity-[0.025]"
         style={{
           backgroundImage:
             "linear-gradient(rgba(255,255,255,.1) 1px, transparent 1px), linear-gradient(90deg, rgba(255,255,255,.1) 1px, transparent 1px)",
@@ -84,15 +115,16 @@ export default function Hero() {
 
       {/* Content */}
       <div className="relative z-10 max-w-6xl mx-auto px-6 text-center pt-32 pb-20">
+        {/* Brand badge */}
         <motion.div
           initial={{ opacity: 0, y: 30 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.8, delay: 2.2 }}
           className="mb-6"
         >
-          <span className="inline-flex items-center gap-2 px-4 py-2 rounded-full glass text-xs md:text-sm text-white/60 tracking-widest uppercase">
-            <span className="w-2 h-2 bg-primary rounded-full animate-pulse" />
-            Editor de Vídeo Profissional
+          <span className="inline-flex items-center gap-2 px-4 py-2 rounded-full glass text-xs md:text-sm text-white/70 tracking-widest uppercase font-medium">
+            <Clapperboard size={14} className="text-primary" />
+            Jeremias &amp; co. — Studio de Edição
           </span>
         </motion.div>
 
@@ -106,9 +138,9 @@ export default function Hero() {
           <br />
           comuns em{" "}
           <span className="gradient-text-red text-glow-red">
-            experiências
+            máquinas de
             <br />
-            cinematográficas.
+            retenção.
           </span>
         </motion.h1>
 
@@ -161,6 +193,8 @@ export default function Hero() {
                   target={stat.value}
                   prefix={stat.prefix}
                   suffix={stat.suffix}
+                  isText={stat.isText}
+                  textValue={stat.textValue}
                 />
               </div>
               <div className="text-sm text-white/40">{stat.label}</div>

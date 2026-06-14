@@ -6,9 +6,9 @@ import { Menu, X } from "lucide-react";
 
 const navLinks = [
   { label: "Início", href: "#hero" },
-  { label: "Experiência", href: "#experiencia" },
+  { label: "Sobre", href: "#sobre" },
   { label: "Portfólio", href: "#portfolio" },
-  { label: "Cursos", href: "#cursos" },
+  { label: "Serviços", href: "#servicos" },
   { label: "Processo", href: "#processo" },
   { label: "Contato", href: "#contato" },
 ];
@@ -45,9 +45,10 @@ export default function Navbar() {
       >
         <div className="max-w-7xl mx-auto px-6 h-20 flex items-center justify-between">
           <a href="#hero" className="relative group">
-            <span className="text-2xl font-bold tracking-tight">
+            <span className="text-xl font-bold tracking-tight">
               <span className="text-primary">J</span>
               <span className="text-white">eremias</span>
+              <span className="text-white/40 font-light"> &amp; co.</span>
             </span>
             <span className="absolute -bottom-1 left-0 w-0 h-[2px] bg-primary transition-all duration-300 group-hover:w-full" />
           </a>
