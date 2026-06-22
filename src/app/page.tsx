@@ -3,10 +3,10 @@
 import LoadingScreen from "@/components/LoadingScreen";
 import Navbar from "@/components/Navbar";
 import Hero from "@/components/Hero";
-import Experience from "@/components/Experience";
+import About from "@/components/About";
 import Portfolio from "@/components/Portfolio";
 import PortfolioVideos from "@/components/PortfolioVideos";
-import Courses from "@/components/Courses";
+import Services from "@/components/Services";
 import Process from "@/components/Process";
 import Contact from "@/components/Contact";
 import Footer from "@/components/Footer";
@@ -19,10 +19,10 @@ export default function Home() {
       <Navbar />
       <main>
         <Hero />
-        <Experience />
+        <About />
         <Portfolio />
         <PortfolioVideos />
-        <Courses />
+        <Services />
         <Process />
         <Contact />
       </main>

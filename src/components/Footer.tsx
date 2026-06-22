@@ -33,10 +33,11 @@ export default function Footer() {
     <footer className="relative py-12 border-t border-white/5">
       <div className="max-w-6xl mx-auto px-6">
         <div className="flex flex-col md:flex-row items-center justify-between gap-6">
-          <div className="flex items-center gap-2">
+          <div className="flex items-center gap-3">
             <span className="text-lg font-bold">
               <span className="text-primary">J</span>
               <span className="text-white">eremias</span>
+              <span className="text-white/30 font-light"> &amp; co.</span>
             </span>
             <span className="text-white/20 text-sm">
               © 2026 — Todos os direitos reservados.
