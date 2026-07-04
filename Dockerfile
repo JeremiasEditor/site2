@@ -26,8 +26,8 @@ RUN apk add --no-cache curl
 # Copy package files
 COPY package*.json ./
 
-# Install production dependencies only
-RUN npm ci --omit=dev
+# Install all dependencies (keep dev deps for now)
+RUN npm ci
 
 # Copy built app from builder (.next folder)
 COPY --from=builder /app/.next ./.next
