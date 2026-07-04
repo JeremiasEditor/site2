@@ -13,26 +13,8 @@ import {
   Crown,
   Handshake,
 } from "lucide-react";
-
-const WHATSAPP_URL =
-  "https://wa.me/5562994914290?text=Olá! Gostaria de saber mais sobre os serviços da Jeremias %26 co.";
-
-type Plan = {
-  name: string;
-  icon: React.ElementType;
-  description: string;
-  price: string;
-  highlight?: boolean;
-  isPartnership?: boolean;
-};
-
-type ServiceCategory = {
-  id: string;
-  icon: React.ElementType;
-  title: string;
-  subtitle: string;
-  plans: Plan[];
-};
+import { useContent } from "@/context/ContentContext";
+import type { ServiceCategoryContent, ServicePlan } from "@/lib/content";
 
 function YoutubeIcon({ size = 24, className = "" }: { size?: number; className?: string }) {
   return (
@@ -72,132 +54,28 @@ function InstagramIcon({ size = 24, className = "" }: { size?: number; className
     </svg>
   );
 }
-const serviceCategories: ServiceCategory[] = [
-  {
-    id: "youtube",
-    icon: YoutubeIcon,
-    title: "Produção para YouTube",
-    subtitle: "Vídeos long-form otimizados para retenção e crescimento de canal",
-    plans: [
-      {
-        name: "Silver",
-        icon: Sparkles,
-        description:
-          "Vídeos até 10 min · máx. 20 min de bruto · Edição simples · Pacote mensal",
-        price: "A partir de R$ 100,00",
-        highlight: false,
-      },
-      {
-        name: "Gold",
-        icon: Crown,
-        description:
-          "Vídeos até 20 min · máx. 30 min de bruto · Edição avançada · Pacote mensal · Consultoria inclusa",
-        price: "A partir de R$ 200,00",
-        highlight: true,
-      },
-      {
-        name: "Parceria",
-        icon: Handshake,
-        description: "Condições especiais para parcerias de longo prazo. Entre em contato para discutir.",
-        price: "A definir",
-        isPartnership: true,
-      },
-    ],
-  },
-  {
-    id: "instagram",
-    icon: InstagramIcon,
-    title: "Produção para Instagram / TikTok",
-    subtitle: "Shorts e Reels de alta retenção para crescimento nas redes sociais",
-    plans: [
-      {
-        name: "Silver",
-        icon: Sparkles,
-        description:
-          "5 a 20 vídeos de até 1 min · máx. 2 min de bruto · Edição simples",
-        price: "A partir de R$ 150,00",
-        highlight: false,
-      },
-      {
-        name: "Gold",
-        icon: Crown,
-        description:
-          "10 a 30 vídeos de até 2 min · máx. 5 min de bruto · Edição avançada",
-        price: "A partir de R$ 500,00",
-        highlight: true,
-      },
-      {
-        name: "Parceria",
-        icon: Handshake,
-        description: "Condições especiais para parcerias de longo prazo. Entre em contato para discutir.",
-        price: "A definir",
-        isPartnership: true,
-      },
-    ],
-  },
-  {
-    id: "criativos",
-    icon: Megaphone,
-    title: "Produção de Criativos",
-    subtitle: "Anúncios e criativos de alta conversão para campanhas de tráfego pago",
-    plans: [
-      {
-        name: "Silver",
-        icon: Sparkles,
-        description:
-          "5 a 20 criativos de até 1 min · máx. 2 min de bruto · Edição simples",
-        price: "A partir de R$ 200,00",
-        highlight: false,
-      },
-      {
-        name: "Gold",
-        icon: Crown,
-        description:
-          "10 a 30 criativos de até 1 min · máx. 5 min de bruto · Edição avançada",
-        price: "A partir de R$ 600,00",
-        highlight: true,
-      },
-      {
-        name: "Parceria",
-        icon: Handshake,
-        description: "Condições especiais para parcerias de longo prazo. Entre em contato para discutir.",
-        price: "A definir",
-        isPartnership: true,
-      },
-    ],
-  },
-  {
-    id: "thumbnail",
-    icon: ImageIcon,
-    title: "Criação de Thumbnail",
-    subtitle: "Thumbnails profissionais que aumentam o CTR do seu canal",
-    plans: [
-      {
-        name: "Silver",
-        icon: Sparkles,
-        description: "4 thumbnails profissionais",
-        price: "R$ 89,00",
-        highlight: false,
-      },
-      {
-        name: "Gold",
-        icon: Crown,
-        description: "8 thumbnails profissionais",
-        price: "R$ 169,00",
-        highlight: true,
-      },
-      {
-        name: "Ruby",
-        icon: Crown,
-        description: "12 thumbnails profissionais",
-        price: "R$ 219,00",
-        highlight: false,
-      },
-    ],
-  },
-];
 
-function PlanCard({ plan }: { plan: Plan }) {
+const categoryIconMap: Record<string, React.ElementType> = {
+  youtube: YoutubeIcon,
+  instagram: InstagramIcon,
+  megaphone: Megaphone,
+  image: ImageIcon,
+};
+
+function planIcon(plan: ServicePlan): React.ElementType {
+  if (plan.isPartnership) return Handshake;
+  if (/gold|ruby/i.test(plan.name)) return Crown;
+  return Sparkles;
+}
+
+function PlanCard({
+  plan,
+  whatsappUrl,
+}: {
+  plan: ServicePlan;
+  whatsappUrl: string;
+}) {
+  const PlanIcon = planIcon(plan);
   return (
     <div
       className={`relative group rounded-2xl overflow-hidden transition-all duration-500 ${
@@ -233,7 +111,7 @@ function PlanCard({ plan }: { plan: Plan }) {
               plan.highlight ? "bg-primary/20" : "bg-white/5"
             }`}
           >
-            <plan.icon
+            <PlanIcon
               size={18}
               className={plan.highlight ? "text-primary" : "text-white/40"}
             />
@@ -271,7 +149,7 @@ function PlanCard({ plan }: { plan: Plan }) {
 
           {!plan.isPartnership && (
             <a
-              href={WHATSAPP_URL}
+              href={whatsappUrl}
               target="_blank"
               rel="noopener noreferrer"
               className={`flex items-center gap-2 px-4 py-2.5 rounded-xl text-sm font-medium transition-all duration-300 flex-shrink-0 ${
@@ -286,7 +164,7 @@ function PlanCard({ plan }: { plan: Plan }) {
           )}
           {plan.isPartnership && (
             <a
-              href={WHATSAPP_URL}
+              href={whatsappUrl}
               target="_blank"
               rel="noopener noreferrer"
               className="flex items-center gap-2 px-4 py-2.5 rounded-xl text-sm font-medium bg-white/5 text-white/40 hover:bg-white/10 hover:text-white/60 border border-white/5 transition-all duration-300 flex-shrink-0"
@@ -301,8 +179,15 @@ function PlanCard({ plan }: { plan: Plan }) {
   );
 }
 
-function ServiceSection({ category }: { category: ServiceCategory }) {
+function ServiceSection({
+  category,
+  whatsappUrl,
+}: {
+  category: ServiceCategoryContent;
+  whatsappUrl: string;
+}) {
   const [open, setOpen] = useState(true);
+  const CategoryIcon = categoryIconMap[category.icon] ?? Megaphone;
   const ref = useRef(null);
   const inView = useInView(ref, { once: true, margin: "-80px" });
 
@@ -321,7 +206,7 @@ function ServiceSection({ category }: { category: ServiceCategory }) {
       >
         <div className="flex items-center gap-4">
           <div className="w-12 h-12 rounded-xl bg-primary/10 flex items-center justify-center flex-shrink-0">
-            <category.icon size={22} className="text-primary" />
+            <CategoryIcon size={22} className="text-primary" />
           </div>
           <div>
             <h3 className="text-lg md:text-xl font-bold text-white">
@@ -348,7 +233,7 @@ function ServiceSection({ category }: { category: ServiceCategory }) {
           }`}
         >
           {category.plans.map((plan, i) => (
-            <PlanCard key={i} plan={plan} />
+            <PlanCard key={i} plan={plan} whatsappUrl={whatsappUrl} />
           ))}
         </motion.div>
       )}
@@ -357,6 +242,7 @@ function ServiceSection({ category }: { category: ServiceCategory }) {
 }
 
 export default function Services() {
+  const { services } = useContent();
   const ref = useRef(null);
   const inView = useInView(ref, { once: true, margin: "-100px" });
 
@@ -374,16 +260,14 @@ export default function Services() {
           className="text-center mb-20"
         >
           <span className="text-xs tracking-[0.3em] uppercase text-primary/80 font-medium">
-            Produtos &amp; Serviços
+            {services.sectionLabel}
           </span>
           <h2 className="text-3xl md:text-5xl font-bold mt-4 mb-6">
-            Dê vida às suas{" "}
-            <span className="gradient-text-red">idéias aqui</span>
+            {services.headingLead}{" "}
+            <span className="gradient-text-red">{services.headingHighlight}</span>
           </h2>
           <p className="text-white/40 max-w-2xl mx-auto leading-relaxed">
-            Seus criativos, criação de conteúdo, criação de site — talvez.
-            Aprenda as técnicas profissionais usadas diariamente em projetos
-            reconhecidos internacionalmente.
+            {services.description}
           </p>
 
           {/* Under construction notice */}
@@ -394,15 +278,18 @@ export default function Services() {
             className="inline-flex items-center gap-2 mt-6 px-5 py-2.5 rounded-full glass border-yellow-500/20 text-yellow-400/70 text-sm"
           >
             <Construction size={16} className="text-yellow-400/70" />
-            Alguns serviços em construção — preços e detalhes sujeitos a
-            alteração
+            {services.constructionNotice}
           </motion.div>
         </motion.div>
 
         {/* Service categories */}
         <div>
-          {serviceCategories.map((category) => (
-            <ServiceSection key={category.id} category={category} />
+          {services.categories.map((category) => (
+            <ServiceSection
+              key={category.id}
+              category={category}
+              whatsappUrl={services.whatsappUrl}
+            />
           ))}
         </div>
 
@@ -414,11 +301,10 @@ export default function Services() {
           className="text-center mt-16"
         >
           <p className="text-white/40 mb-6 text-sm">
-            Não encontrou o que procura? Entre em contato para um orçamento
-            personalizado.
+            {services.bottomText}
           </p>
           <a
-            href={WHATSAPP_URL}
+            href={services.whatsappUrl}
             target="_blank"
             rel="noopener noreferrer"
             className="inline-flex items-center gap-3 px-8 py-4 bg-green-500/10 text-green-400 border border-green-500/20 rounded-xl font-medium hover:bg-green-500 hover:text-white transition-all duration-300"
@@ -426,7 +312,7 @@ export default function Services() {
             <svg viewBox="0 0 24 24" className="w-5 h-5 fill-current">
               <path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347m-5.421 7.403h-.004a9.87 9.87 0 01-5.031-1.378l-.361-.214-3.741.982.998-3.648-.235-.374a9.86 9.86 0 01-1.51-5.26c.001-5.45 4.436-9.884 9.888-9.884 2.64 0 5.122 1.03 6.988 2.898a9.825 9.825 0 012.893 6.994c-.003 5.45-4.437 9.884-9.885 9.884m8.413-18.297A11.815 11.815 0 0012.05 0C5.495 0 .16 5.335.157 11.892c0 2.096.547 4.142 1.588 5.945L.057 24l6.305-1.654a11.882 11.882 0 005.683 1.448h.005c6.554 0 11.89-5.335 11.893-11.893a11.821 11.821 0 00-3.48-8.413z" />
             </svg>
-            Solicitar Orçamento no WhatsApp
+            {services.bottomCtaLabel}
           </a>
         </motion.div>
       </div>

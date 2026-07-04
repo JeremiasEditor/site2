@@ -3,39 +3,18 @@
 import { motion, useInView } from "framer-motion";
 import { useRef } from "react";
 import { FileText, Target, Clapperboard, Rocket } from "lucide-react";
+import { useContent } from "@/context/ContentContext";
 
-const steps = [
-  {
-    icon: FileText,
-    title: "Briefing",
-    description:
-      "Entendemos suas necessidades, referências e objetivos do projeto.",
-    step: "01",
-  },
-  {
-    icon: Target,
-    title: "Estratégia",
-    description:
-      "Planejamos o conteúdo com foco em engajamento e retenção máxima.",
-    step: "02",
-  },
-  {
-    icon: Clapperboard,
-    title: "Edição Cinematográfica",
-    description:
-      "Aplicamos técnicas profissionais de color grading, motion design e sound design.",
-    step: "03",
-  },
-  {
-    icon: Rocket,
-    title: "Entrega Otimizada",
-    description:
-      "Entregamos o projeto finalizado, otimizado para a plataforma escolhida.",
-    step: "04",
-  },
-];
+const stepIconMap: Record<string, React.ElementType> = {
+  "file-text": FileText,
+  target: Target,
+  clapperboard: Clapperboard,
+  rocket: Rocket,
+};
 
 export default function Process() {
+  const { process } = useContent();
+  const steps = process.steps;
   const ref = useRef(null);
   const inView = useInView(ref, { once: true, margin: "-100px" });
 
@@ -51,15 +30,13 @@ export default function Process() {
           className="text-center mb-20"
         >
           <span className="text-xs tracking-[0.3em] uppercase text-primary/80 font-medium">
-            Como Funciona
+            {process.sectionLabel}
           </span>
           <h2 className="text-3xl md:text-5xl font-bold mt-4 mb-6">
-            Processo{" "}
-            <span className="gradient-text-red">simplificado</span>
+            {process.headingLead}{" "}
+            <span className="gradient-text-red">{process.headingHighlight}</span>
           </h2>
-          <p className="text-white/40 max-w-xl mx-auto">
-            Do briefing à entrega final, cada etapa é cuidadosamente executada.
-          </p>
+          <p className="text-white/40 max-w-xl mx-auto">{process.subtitle}</p>
         </motion.div>
 
         <div className="relative">
@@ -67,7 +44,9 @@ export default function Process() {
           <div className="hidden md:block absolute top-1/2 left-0 right-0 h-px bg-gradient-to-r from-transparent via-primary/20 to-transparent -translate-y-1/2" />
 
           <div className="grid grid-cols-1 md:grid-cols-4 gap-8">
-            {steps.map((step, i) => (
+            {steps.map((step, i) => {
+              const StepIcon = stepIconMap[step.icon] ?? FileText;
+              return (
               <motion.div
                 key={i}
                 initial={{ opacity: 0, y: 40 }}
@@ -88,7 +67,7 @@ export default function Process() {
 
                   <div className="relative z-10 pt-4">
                     <div className="w-16 h-16 rounded-2xl bg-primary/10 flex items-center justify-center mx-auto mb-6 group-hover:bg-primary/20 group-hover:scale-110 transition-all duration-300">
-                      <step.icon className="w-7 h-7 text-primary" />
+                      <StepIcon className="w-7 h-7 text-primary" />
                     </div>
 
                     <h3 className="text-lg font-bold text-white mb-3">
@@ -105,7 +84,8 @@ export default function Process() {
                   <div className="hidden md:block absolute -right-4 top-1/2 -translate-y-1/2 w-2 h-2 bg-primary/40 rounded-full z-20" />
                 )}
               </motion.div>
-            ))}
+              );
+            })}
           </div>
         </div>
       </div>

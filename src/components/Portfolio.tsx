@@ -12,6 +12,7 @@ import {
   ChevronRight,
   Clapperboard,
 } from "lucide-react";
+import { useContent } from "@/context/ContentContext";
 
 function YoutubeIcon({ size = 20 }: { size?: number }) {
   return (
@@ -50,49 +51,21 @@ function InstagramIcon({ size = 20 }: { size?: number }) {
   );
 }
 
-const projects = [
-  {
-    client: "Carlos Santana",
-    type: "Long-form Content",
-    description: "Canal de Roblox com alcance massivo e engajamento consistente.",
-    stats: ["3,4 milhões de inscritos", "319.748.548 visualizações"],
-    youtube: "https://www.youtube.com/@IamCarlosSantana/videos",
-    instagram: "",
-    image: "/assets/carlos-santana.jpg",
-    color: "from-red-500/20 to-orange-500/10",
-    accentColor: "border-red-500/30",
-  },
-  {
-    client: "Viaja Britto",
-    type: "Long-form Content",
-    description: "Canal de viagens para YouTube com crescimento acelerado.",
-    stats: ["48.6K inscritos", "15.904.413 visualizações"],
-    youtube: "https://www.youtube.com/@Viajabrito/videos",
-    instagram: "",
-    image: "/assets/viaja-britto.jpg",
-    color: "from-primary/20 to-rose-500/10",
-    accentColor: "border-primary/30",
-  },
-  {
-    client: "O Meu Perfil Geek",
-    type: "Long-form Content",
-    description: "Canal focado em anime e cultura geek com comunidade engajada.",
-    stats: ["11.3K inscritos", "1.618.621 visualizações"],
-    youtube: "https://www.youtube.com/@omeuperfilgeek",
-    instagram: "",
-    image: "/assets/perfil-geek.jpg",
-    color: "from-primary/20 to-pink-500/10",
-    accentColor: "border-pink-500/30",
-  },
+const projectColors = [
+  { color: "from-red-500/20 to-orange-500/10", accentColor: "border-red-500/30" },
+  { color: "from-primary/20 to-rose-500/10", accentColor: "border-primary/30" },
+  { color: "from-primary/20 to-pink-500/10", accentColor: "border-pink-500/30" },
 ];
 
-const categories = [
-  { icon: Flame, label: "Reels Virais" },
-  { icon: Target, label: "Anúncios/Criativos" },
-  { icon: Star, label: "Long-form" },
-];
+const categoryIcons = [Flame, Target, Star];
 
 export default function Portfolio() {
+  const { portfolio } = useContent();
+  const projects = portfolio.projects;
+  const categories = portfolio.categories.map((label, i) => ({
+    icon: categoryIcons[i % categoryIcons.length],
+    label,
+  }));
   const ref = useRef(null);
   const inView = useInView(ref, { once: true, margin: "-100px" });
   const [activeIndex, setActiveIndex] = useState(0);
@@ -102,6 +75,7 @@ export default function Portfolio() {
   const next = () => setActiveIndex((i) => (i + 1) % projects.length);
 
   const project = projects[activeIndex];
+  const projectStyle = projectColors[activeIndex % projectColors.length];
 
   return (
     <section id="portfolio" className="relative py-32 overflow-hidden">
@@ -116,15 +90,15 @@ export default function Portfolio() {
           className="text-center mb-16"
         >
           <span className="text-xs tracking-[0.3em] uppercase text-primary/80 font-medium">
-            Destaques
+            {portfolio.sectionLabel}
           </span>
           <h2 className="text-3xl md:text-5xl font-bold mt-4 mb-6">
-            Projetos que geraram{" "}
-            <span className="gradient-text-red">resultados reais</span>
+            {portfolio.headingLead}{" "}
+            <span className="gradient-text-red">
+              {portfolio.headingHighlight}
+            </span>
           </h2>
-          <p className="text-white/40 max-w-xl mx-auto">
-            projetos que geraram resultados reais para os meus clientes
-          </p>
+          <p className="text-white/40 max-w-xl mx-auto">{portfolio.subtitle}</p>
         </motion.div>
 
         {/* Categories */}
@@ -165,7 +139,7 @@ export default function Portfolio() {
               >
                 {/* Gradient accent */}
                 <div
-                  className={`absolute inset-0 bg-gradient-to-br ${project.color} opacity-60`}
+                  className={`absolute inset-0 bg-gradient-to-br ${projectStyle.color} opacity-60`}
                 />
                 <div className="absolute top-0 left-0 right-0 h-px bg-gradient-to-r from-transparent via-primary/40 to-transparent" />
 
@@ -174,7 +148,7 @@ export default function Portfolio() {
                     {/* Profile image */}
                     <div className="relative flex-shrink-0">
                       <div
-                        className={`w-28 h-28 md:w-40 md:h-40 rounded-2xl overflow-hidden bg-primary/10 border-2 ${project.accentColor} shadow-lg`}
+                        className={`w-28 h-28 md:w-40 md:h-40 rounded-2xl overflow-hidden bg-primary/10 border-2 ${projectStyle.accentColor} shadow-lg`}
                       >
                         {/* eslint-disable-next-line @next/next/no-img-element */}
                         <img
@@ -365,7 +339,7 @@ export default function Portfolio() {
         {/* YT Jobs link — hidden in footer area, very small */}
         <div className="text-center mt-16">
           <a
-            href="https://www.ytjobs.com/"
+            href={portfolio.ytjobsHref}
             target="_blank"
             rel="noopener noreferrer"
             className="text-[10px] text-white/15 hover:text-white/30 transition-colors duration-300"

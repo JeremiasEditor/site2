@@ -3,6 +3,7 @@
 import { motion, useInView } from "framer-motion";
 import { useRef, useState, useEffect } from "react";
 import { Play } from "lucide-react";
+import { useContent } from "@/context/ContentContext";
 
 interface Video {
   id: number;
@@ -15,6 +16,7 @@ interface Video {
 }
 
 export default function PortfolioVideos() {
+  const { portfolioVideos } = useContent();
   const [videos, setVideos] = useState<Video[]>([]);
   const [selectedVideo, setSelectedVideo] = useState<Video | null>(null);
   const [loading, setLoading] = useState(true);
@@ -55,10 +57,13 @@ export default function PortfolioVideos() {
             className="text-center mb-12"
           >
             <span className="text-xs tracking-[0.3em] uppercase text-red-500/80 font-medium">
-              Vídeos em Destaque
+              {portfolioVideos.sectionLabel}
             </span>
             <h3 className="text-3xl md:text-4xl font-bold mt-3">
-              Portfólio de <span className="text-red-500">Vídeos</span>
+              {portfolioVideos.headingLead}{" "}
+              <span className="text-red-500">
+                {portfolioVideos.headingHighlight}
+              </span>
             </h3>
           </motion.div>
 

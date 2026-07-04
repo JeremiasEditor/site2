@@ -3,15 +3,11 @@
 import { motion, useInView } from "framer-motion";
 import { useRef } from "react";
 import { Clapperboard, Quote, CheckCircle2 } from "lucide-react";
-
-const highlights = [
-  "Trato todo projeto como o vídeo mais importante do mundo.",
-  "Especializado em recuperar o fôlego de canais.",
-  "Vários cases de sucesso com criadores de conteúdo.",
-  "Obsessão pelo detalhe e compromisso com o seu resultado.",
-];
+import { useContent } from "@/context/ContentContext";
 
 export default function About() {
+  const { about } = useContent();
+  const highlights = about.highlights;
   const ref = useRef(null);
   const inView = useInView(ref, { once: true, margin: "-100px" });
 
@@ -30,16 +26,13 @@ export default function About() {
           className="text-center mb-20"
         >
           <span className="text-xs tracking-[0.3em] uppercase text-primary/80 font-medium">
-            Quem está por trás
+            {about.sectionLabel}
           </span>
           <h2 className="text-3xl md:text-5xl font-bold mt-4 mb-6">
-            Fundador &amp;{" "}
-            <span className="gradient-text-red">Editor de Vídeo</span>
+            {about.headingLead}{" "}
+            <span className="gradient-text-red">{about.headingHighlight}</span>
           </h2>
-          <p className="text-white/40 max-w-xl mx-auto">
-            Jeremias &amp; co. — studio de edição focado em retenção e
-            engajamento real.
-          </p>
+          <p className="text-white/40 max-w-xl mx-auto">{about.subtitle}</p>
         </motion.div>
 
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-12 lg:gap-20 items-center">
@@ -63,10 +56,10 @@ export default function About() {
                 </div>
 
                 <h3 className="text-2xl md:text-3xl font-bold text-white mb-1">
-                  Jeremias Bruno
+                  {about.name}
                 </h3>
                 <p className="text-primary text-sm font-medium tracking-wide mb-6">
-                  Fundador e Editor de vídeo na Jeremias &amp; co.
+                  {about.role}
                 </p>
 
                 <div className="h-px bg-white/5 mb-6" />
@@ -78,10 +71,7 @@ export default function About() {
                     className="text-primary/40 mb-3 rotate-180"
                   />
                   <p className="text-white/60 text-sm leading-relaxed italic">
-                    Minha abordagem é simples: trato todo projeto como o vídeo
-                    mais importante do mundo. Independente do tamanho do seu
-                    anúncio ou do seu canal, você vai receber a mesma obsessão
-                    pelo detalhe e compromisso de verdade com o seu resultado.
+                    {about.quote}
                   </p>
                 </div>
 
@@ -106,8 +96,12 @@ export default function About() {
                   <CheckCircle2 size={18} className="text-primary" />
                 </div>
                 <div>
-                  <p className="text-white text-sm font-semibold">150+</p>
-                  <p className="text-white/40 text-xs">Projetos entregues</p>
+                  <p className="text-white text-sm font-semibold">
+                    {about.floatingCardValue}
+                  </p>
+                  <p className="text-white/40 text-xs">
+                    {about.floatingCardLabel}
+                  </p>
                 </div>
               </div>
             </motion.div>
@@ -121,27 +115,15 @@ export default function About() {
             className="space-y-6"
           >
             <p className="text-white/80 text-lg leading-relaxed">
-              Olá, eu sou{" "}
-              <span className="text-white font-semibold">Jeremias Bruno</span>,
-              Fundador e Editor de vídeo na{" "}
-              <span className="text-primary font-semibold">
-                Jeremias &amp; co.
-              </span>
+              {about.bioParagraph1}
             </p>
 
             <p className="text-white/60 leading-relaxed">
-              Eu transformo a retenção e engajamento dos meus clientes, crio
-              vídeos que verdadeiramente vendem e já trabalhei com numerosos
-              criadores de conteúdo.
+              {about.bioParagraph2}
             </p>
 
             <p className="text-white/60 leading-relaxed">
-              Com verdadeira experiência na área, tenho vários cases de sucesso,
-              criando visuais impressionantes — mas principalmente sou
-              especializado em ajudar criadores a{" "}
-              <span className="text-white/80 font-medium">
-                recuperar o fôlego do canal.
-              </span>
+              {about.bioParagraph3}
             </p>
 
             {/* Highlights */}
@@ -173,10 +155,10 @@ export default function About() {
               className="pt-4"
             >
               <a
-                href="#contato"
+                href={about.ctaHref}
                 className="inline-flex items-center gap-2 px-6 py-3 bg-primary text-white font-medium rounded-xl hover:shadow-[0_0_30px_rgba(255,27,27,0.3)] hover:scale-105 transition-all duration-300"
               >
-                Vamos trabalhar juntos
+                {about.ctaLabel}
               </a>
             </motion.div>
           </motion.div>

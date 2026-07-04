@@ -1,5 +1,5 @@
-"use client";
-
+import { getContent } from "@/lib/content.server";
+import { ContentProvider } from "@/context/ContentContext";
 import LoadingScreen from "@/components/LoadingScreen";
 import Navbar from "@/components/Navbar";
 import Hero from "@/components/Hero";
@@ -12,9 +12,13 @@ import Contact from "@/components/Contact";
 import Footer from "@/components/Footer";
 import WhatsAppButton from "@/components/WhatsAppButton";
 
+export const dynamic = "force-dynamic";
+
 export default function Home() {
+  const content = getContent();
+
   return (
-    <>
+    <ContentProvider content={content}>
       <LoadingScreen />
       <Navbar />
       <main>
@@ -28,6 +32,6 @@ export default function Home() {
       </main>
       <Footer />
       <WhatsAppButton />
-    </>
+    </ContentProvider>
   );
 }

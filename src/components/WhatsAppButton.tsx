@@ -1,11 +1,13 @@
 "use client";
 
 import { motion } from "framer-motion";
+import { useContent } from "@/context/ContentContext";
 
 export default function WhatsAppButton() {
+  const { whatsapp } = useContent();
   return (
     <motion.a
-      href="https://wa.me/5562994914290?text=Olá! Gostaria de saber mais sobre seus serviços de edição."
+      href={whatsapp.href}
       target="_blank"
       rel="noopener noreferrer"
       initial={{ scale: 0, opacity: 0 }}

@@ -3,17 +3,11 @@
 import { useState, useEffect } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import { Menu, X } from "lucide-react";
-
-const navLinks = [
-  { label: "Início", href: "#hero" },
-  { label: "Sobre", href: "#sobre" },
-  { label: "Portfólio", href: "#portfolio" },
-  { label: "Serviços", href: "#servicos" },
-  { label: "Processo", href: "#processo" },
-  { label: "Contato", href: "#contato" },
-];
+import { useContent } from "@/context/ContentContext";
 
 export default function Navbar() {
+  const { navbar } = useContent();
+  const navLinks = navbar.links;
   const [scrolled, setScrolled] = useState(false);
   const [mobileOpen, setMobileOpen] = useState(false);
 
@@ -65,10 +59,10 @@ export default function Navbar() {
               </a>
             ))}
             <a
-              href="#contato"
+              href={navbar.ctaHref}
               className="ml-4 px-5 py-2.5 text-sm font-medium bg-primary/10 text-primary border border-primary/20 rounded-lg hover:bg-primary hover:text-white transition-all duration-300"
             >
-              Contato
+              {navbar.ctaLabel}
             </a>
           </div>
 
@@ -106,7 +100,7 @@ export default function Navbar() {
               </motion.a>
             ))}
             <motion.a
-              href="#contato"
+              href={navbar.ctaHref}
               onClick={() => setMobileOpen(false)}
               initial={{ opacity: 0, y: 20 }}
               animate={{ opacity: 1, y: 0 }}
@@ -114,7 +108,7 @@ export default function Navbar() {
               transition={{ delay: navLinks.length * 0.08 }}
               className="mt-4 px-8 py-3 bg-primary text-white rounded-lg font-medium"
             >
-              Entrar em Contato
+              {navbar.ctaLabel}
             </motion.a>
           </motion.div>
         )}
