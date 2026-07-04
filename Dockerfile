@@ -44,10 +44,11 @@ EXPOSE 3000
 
 # Health check
 HEALTHCHECK --interval=30s --timeout=3s --start-period=5s --retries=3 \
-  CMD curl -f http://localhost:3000 || exit 1
+  CMD curl -f http://localhost:${PORT:-3000} || exit 1
 
 # Set environment
 ENV NODE_ENV=production
+ENV PORT=3000
 
-# Start the app
-CMD ["npm", "start"]
+# Start the app with correct port
+CMD ["sh", "-c", "next start -p ${PORT:-3000}"]
