@@ -4,6 +4,7 @@ import { motion, useInView } from "framer-motion";
 import { useRef, useEffect, useState } from "react";
 import { Play, MessageCircle, Clapperboard } from "lucide-react";
 import Particles from "./Particles";
+import { useContent } from "@/context/ContentContext";
 
 function AnimatedCounter({
   target,
@@ -52,13 +53,9 @@ function AnimatedCounter({
   );
 }
 
-const stats = [
-  { value: 150, prefix: "", suffix: "+", label: "Projetos Entregues", isText: false, textValue: "" },
-  { value: 0, prefix: "", suffix: "", label: "Visualizações Geradas", isText: true, textValue: "+1m views" },
-  { value: 300, prefix: "+", suffix: "%", label: "Aumento Médio de Engajamento", isText: false, textValue: "" },
-];
-
 export default function Hero() {
+  const { hero } = useContent();
+  const stats = hero.stats;
   const ref = useRef(null);
   const videoRef = useRef<HTMLVideoElement>(null);
 
@@ -66,7 +63,7 @@ export default function Hero() {
     if (videoRef.current) {
       videoRef.current.play().catch(() => {});
     }
-  }, []);
+  }, [hero.backgroundVideoUrl]);
 
   return (
     <section
@@ -78,8 +75,9 @@ export default function Hero() {
       <div className="absolute inset-0 bg-dark" />
       <video
         ref={videoRef}
+        key={hero.backgroundVideoUrl}
         className="absolute inset-0 w-full h-full object-cover opacity-30"
-        src="/assets/reel.mp4"
+        src={hero.backgroundVideoUrl}
         autoPlay
         muted
         loop
@@ -124,7 +122,7 @@ export default function Hero() {
         >
           <span className="inline-flex items-center gap-2 px-4 py-2 rounded-full glass text-xs md:text-sm text-white/70 tracking-widest uppercase font-medium">
             <Clapperboard size={14} className="text-primary" />
-            Jeremias &amp; co. — Studio de Edição
+            {hero.badge}
           </span>
         </motion.div>
 
@@ -134,13 +132,9 @@ export default function Hero() {
           transition={{ duration: 0.8, delay: 2.4 }}
           className="text-4xl sm:text-5xl md:text-6xl lg:text-7xl font-bold leading-[1.1] tracking-tight mb-8"
         >
-          Transformando vídeos
-          <br />
-          comuns em{" "}
+          {hero.titleLine1}{" "}
           <span className="gradient-text-red text-glow-red">
-            máquinas de
-            <br />
-            retenção.
+            {hero.titleHighlight}
           </span>
         </motion.h1>
 
@@ -150,8 +144,7 @@ export default function Hero() {
           transition={{ duration: 0.8, delay: 2.6 }}
           className="text-base md:text-lg text-white/50 max-w-2xl mx-auto mb-12 leading-relaxed"
         >
-          Edição profissional para YouTube, Instagram, Reels, vídeos virais,
-          documentários e conteúdo de alta retenção.
+          {hero.subtitle}
         </motion.p>
 
         <motion.div
@@ -161,21 +154,21 @@ export default function Hero() {
           className="flex flex-col sm:flex-row items-center justify-center gap-4 mb-20"
         >
           <a
-            href="#portfolio"
+            href={hero.primaryCta.href}
             className="group relative px-8 py-4 bg-primary text-white font-medium rounded-xl overflow-hidden transition-all duration-300 hover:shadow-[0_0_40px_rgba(255,27,27,0.3)] hover:scale-105"
           >
             <span className="relative z-10 flex items-center gap-2">
               <Play size={18} />
-              Ver Portfólio
+              {hero.primaryCta.label}
             </span>
             <div className="absolute inset-0 bg-gradient-to-r from-primary to-red-600 opacity-0 group-hover:opacity-100 transition-opacity duration-300" />
           </a>
           <a
-            href="#contato"
+            href={hero.secondaryCta.href}
             className="group px-8 py-4 glass text-white/80 font-medium rounded-xl hover:text-white hover:border-primary/30 transition-all duration-300 flex items-center gap-2"
           >
             <MessageCircle size={18} />
-            Entrar em Contato
+            {hero.secondaryCta.label}
           </a>
         </motion.div>
 

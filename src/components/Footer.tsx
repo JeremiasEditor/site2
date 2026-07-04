@@ -2,6 +2,7 @@
 
 import { motion } from "framer-motion";
 import { Mail } from "lucide-react";
+import { useContent } from "@/context/ContentContext";
 
 function InstagramIcon({ size = 18 }: { size?: number }) {
   return (
@@ -22,13 +23,15 @@ function YoutubeIcon({ size = 18 }: { size?: number }) {
   );
 }
 
-const socials = [
-  { icon: InstagramIcon, href: "https://www.instagram.com/", label: "Instagram" },
-  { icon: YoutubeIcon, href: "https://www.youtube.com/", label: "YouTube" },
-  { icon: Mail, href: "mailto:editorjeremias@gmail.com", label: "Email" },
-];
+const socialIconMap: Record<string, React.ElementType> = {
+  instagram: InstagramIcon,
+  youtube: YoutubeIcon,
+  mail: Mail,
+};
 
 export default function Footer() {
+  const { footer } = useContent();
+  const socials = footer.socials;
   return (
     <footer className="relative py-12 border-t border-white/5">
       <div className="max-w-6xl mx-auto px-6">
@@ -39,26 +42,27 @@ export default function Footer() {
               <span className="text-white">eremias</span>
               <span className="text-white/30 font-light"> &amp; co.</span>
             </span>
-            <span className="text-white/20 text-sm">
-              © 2026 — Todos os direitos reservados.
-            </span>
+            <span className="text-white/20 text-sm">{footer.copyright}</span>
           </div>
 
           <div className="flex items-center gap-4">
-            {socials.map((social, i) => (
-              <motion.a
-                key={i}
-                href={social.href}
-                target="_blank"
-                rel="noopener noreferrer"
-                whileHover={{ scale: 1.1, y: -2 }}
-                whileTap={{ scale: 0.95 }}
-                className="w-10 h-10 rounded-xl glass flex items-center justify-center text-white/40 hover:text-primary hover:border-primary/20 transition-colors duration-300"
-                aria-label={social.label}
-              >
-                <social.icon size={18} />
-              </motion.a>
-            ))}
+            {socials.map((social, i) => {
+              const SocialIcon = socialIconMap[social.icon] ?? Mail;
+              return (
+                <motion.a
+                  key={i}
+                  href={social.href}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  whileHover={{ scale: 1.1, y: -2 }}
+                  whileTap={{ scale: 0.95 }}
+                  className="w-10 h-10 rounded-xl glass flex items-center justify-center text-white/40 hover:text-primary hover:border-primary/20 transition-colors duration-300"
+                  aria-label={social.label}
+                >
+                  <SocialIcon size={18} />
+                </motion.a>
+              );
+            })}
           </div>
         </div>
       </div>
