@@ -1,0 +1,7 @@
+# Railway Configuration
+
+# Build settings
+builder = "dockerfile"
+
+# Environment
+environment = "production"

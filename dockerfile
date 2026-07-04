@@ -3,16 +3,16 @@ FROM node:18-alpine AS builder
 
 WORKDIR /app
 
-# Copy package files
+# Copy package files  
 COPY package*.json ./
 
-# Install dependencies
+# Install all dependencies
 RUN npm ci
 
 # Copy source code
 COPY . .
 
-# Build the Next.js app
+# Build the Next.js app (generates .next folder, NOT /out)
 RUN npm run build
 
 # Production stage
@@ -20,31 +20,31 @@ FROM node:18-alpine
 
 WORKDIR /app
 
-# Install dumb-init for proper signal handling
-RUN apk add --no-cache dumb-init
+# Install curl for healthchecks
+RUN apk add --no-cache curl
 
 # Copy package files
 COPY package*.json ./
 
 # Install production dependencies only
-RUN npm ci --only=production
+RUN npm ci --omit=dev
 
-# Copy built app from builder
+# Copy built app from builder (.next folder)
 COPY --from=builder /app/.next ./.next
 COPY --from=builder /app/public ./public
 
-# Set environment
-ENV NODE_ENV=production
+# Create data directory if it doesn't exist
+RUN mkdir -p /app/data
 
 # Expose port
 EXPOSE 3000
 
 # Health check
 HEALTHCHECK --interval=30s --timeout=3s --start-period=5s --retries=3 \
-  CMD node -e "require('http').get('http://localhost:3000', (r) => {if (r.statusCode !== 200) throw new Error(r.statusCode)})"
+  CMD curl -f http://localhost:3000 || exit 1
 
-# Use dumb-init to handle signals properly
-ENTRYPOINT ["dumb-init", "--"]
+# Set environment
+ENV NODE_ENV=production
 
 # Start the app
 CMD ["npm", "start"]
