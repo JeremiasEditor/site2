@@ -1,8 +1,7 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import { useEffect, useRef } from "react";
 import { useRouter } from "next/navigation";
-import { useRef } from "react";
 
 // Easter Egg: Klondike (sequência de teclas secreta)
 const SECRET_SEQUENCE = ["k", "l", "o", "n", "d", "i", "k", "e"];
