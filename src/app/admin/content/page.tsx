@@ -219,6 +219,7 @@ export default function AdminContentPage() {
   const [content, setContent] = useState<SiteContent | null>(null);
   const [saving, setSaving] = useState(false);
   const [message, setMessage] = useState("");
+  const [uploadingPhoto, setUploadingPhoto] = useState(false);
 
   useEffect(() => {
     fetch("/api/content")
@@ -229,6 +230,34 @@ export default function AdminContentPage() {
 
   const set = (path: (string | number)[], value: unknown) =>
     setContent((c) => (c ? setIn(c, path, value) : c));
+
+  // Faz upload de uma imagem e guarda a URL no caminho indicado do conteúdo.
+  const uploadPhoto = async (file: File, path: (string | number)[]) => {
+    if (!file.type.startsWith("image/")) {
+      setMessage("❌ Selecione um arquivo de imagem");
+      return;
+    }
+    if (file.size > 10 * 1024 * 1024) {
+      setMessage("❌ Imagem muito grande! Máximo 10MB");
+      return;
+    }
+    setUploadingPhoto(true);
+    setMessage("");
+    try {
+      const data = new FormData();
+      data.append("file", file);
+      const res = await fetch("/api/upload", { method: "POST", body: data });
+      if (!res.ok) throw new Error("upload failed");
+      const json = await res.json();
+      set(path, json.url);
+      setMessage("✅ Foto enviada! Clique em Salvar para aplicar no site.");
+    } catch (error) {
+      console.error(error);
+      setMessage("❌ Erro ao enviar a foto");
+    } finally {
+      setUploadingPhoto(false);
+    }
+  };
 
   const handleSave = async () => {
     if (!content) return;
@@ -484,6 +513,51 @@ export default function AdminContentPage() {
 
         {/* ABOUT */}
         <Section title="Sobre" description="Seção sobre você">
+          {/* Foto do card */}
+          <div className="space-y-2">
+            <span className="block text-xs font-medium text-white/60">
+              Foto do card (aparece no lugar do ícone)
+            </span>
+            <div className="flex items-center gap-4">
+              {c.about.photoUrl ? (
+                // eslint-disable-next-line @next/next/no-img-element
+                <img
+                  src={c.about.photoUrl}
+                  alt="Foto do card"
+                  className="w-24 h-24 object-cover rounded-lg border border-slate-700 flex-shrink-0"
+                />
+              ) : (
+                <div className="w-24 h-24 rounded-lg border border-dashed border-slate-700 flex items-center justify-center text-white/30 text-[11px] text-center flex-shrink-0">
+                  Sem foto
+                </div>
+              )}
+              <div className="flex flex-col gap-2">
+                <input
+                  type="file"
+                  accept="image/*"
+                  disabled={uploadingPhoto}
+                  onChange={(e) => {
+                    const f = e.target.files?.[0];
+                    if (f) uploadPhoto(f, ["about", "photoUrl"]);
+                  }}
+                  className="text-sm text-white file:mr-2 file:px-3 file:py-1 file:bg-primary file:text-white file:rounded file:border-0 file:cursor-pointer cursor-pointer disabled:opacity-50"
+                />
+                {uploadingPhoto && (
+                  <span className="text-xs text-white/60 flex items-center gap-1">
+                    <RotateCw size={12} className="animate-spin" /> Enviando...
+                  </span>
+                )}
+                {c.about.photoUrl && (
+                  <button
+                    onClick={() => set(["about", "photoUrl"], "")}
+                    className="text-xs text-red-400 hover:text-red-300 text-left"
+                  >
+                    Remover foto
+                  </button>
+                )}
+              </div>
+            </div>
+          </div>
           <div className="grid sm:grid-cols-2 gap-3">
             <Field
               label="Rótulo da seção"

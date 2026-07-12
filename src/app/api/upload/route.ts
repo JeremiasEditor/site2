@@ -22,9 +22,9 @@ export async function POST(request: NextRequest) {
       );
     }
 
-    if (!file.type.startsWith("video/")) {
+    if (!file.type.startsWith("video/") && !file.type.startsWith("image/")) {
       return NextResponse.json(
-        { error: "O arquivo precisa ser um vídeo" },
+        { error: "O arquivo precisa ser um vídeo ou imagem" },
         { status: 400 }
       );
     }

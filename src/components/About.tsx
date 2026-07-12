@@ -50,10 +50,22 @@ export default function About() {
               <div className="absolute inset-0 bg-gradient-to-br from-primary/5 to-transparent rounded-3xl" />
 
               <div className="relative z-10">
-                {/* Avatar placeholder */}
-                <div className="w-20 h-20 rounded-2xl bg-primary/10 border border-primary/20 flex items-center justify-center mb-6">
-                  <Clapperboard size={32} className="text-primary" />
-                </div>
+                {/* Foto do editor (ou ícone padrão se não houver foto) */}
+                {about.photoUrl ? (
+                  /* eslint-disable-next-line @next/next/no-img-element */
+                  <img
+                    src={about.photoUrl}
+                    alt={about.name}
+                    className="w-full h-64 object-cover rounded-2xl border border-primary/20 mb-6"
+                    onError={(e) => {
+                      e.currentTarget.style.display = "none";
+                    }}
+                  />
+                ) : (
+                  <div className="w-20 h-20 rounded-2xl bg-primary/10 border border-primary/20 flex items-center justify-center mb-6">
+                    <Clapperboard size={32} className="text-primary" />
+                  </div>
+                )}
 
                 <h3 className="text-2xl md:text-3xl font-bold text-white mb-1">
                   {about.name}

@@ -37,6 +37,7 @@ export interface AboutContent {
   headingLead: string;
   headingHighlight: string;
   subtitle: string;
+  photoUrl: string;
   name: string;
   role: string;
   quote: string;
@@ -202,6 +203,7 @@ export const defaultContent: SiteContent = {
     headingHighlight: "Editor de Vídeo",
     subtitle:
       "Jeremias & co. — studio de edição focado em retenção e engajamento real.",
+    photoUrl: "",
     name: "Jeremias Bruno",
     role: "Fundador e Editor de vídeo na Jeremias & co.",
     quote:
