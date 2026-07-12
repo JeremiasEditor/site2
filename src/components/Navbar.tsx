@@ -1,6 +1,7 @@
 "use client";
 
 import { useState, useEffect } from "react";
+import { usePathname } from "next/navigation";
 import { motion, AnimatePresence } from "framer-motion";
 import { Menu, X } from "lucide-react";
 import { useContent } from "@/context/ContentContext";
@@ -8,8 +9,20 @@ import { useContent } from "@/context/ContentContext";
 export default function Navbar() {
   const { navbar } = useContent();
   const navLinks = navbar.links;
+  const pathname = usePathname();
+  const isHome = pathname === "/";
   const [scrolled, setScrolled] = useState(false);
   const [mobileOpen, setMobileOpen] = useState(false);
+
+  // Resolve o destino de cada link do menu levando em conta a página atual:
+  // - "#portfolio" passa a apontar para a página dedicada /portfolio;
+  // - âncoras (#sobre, #contato...) fora da home viram "/#sobre" para
+  //   voltar à landing e rolar até a seção.
+  const resolveHref = (href: string) => {
+    if (href === "#portfolio" || href === "/portfolio") return "/portfolio";
+    if (href.startsWith("#")) return isHome ? href : `/${href}`;
+    return href;
+  };
 
   useEffect(() => {
     const handleScroll = () => setScrolled(window.scrollY > 50);
@@ -38,7 +51,7 @@ export default function Navbar() {
         }`}
       >
         <div className="max-w-7xl mx-auto px-6 h-20 flex items-center justify-between">
-          <a href="#hero" className="relative group">
+          <a href={resolveHref("#hero")} className="relative group">
             <span className="text-xl font-bold tracking-tight">
               <span className="text-primary">J</span>
               <span className="text-white">eremias</span>
@@ -51,7 +64,7 @@ export default function Navbar() {
             {navLinks.map((link) => (
               <a
                 key={link.href}
-                href={link.href}
+                href={resolveHref(link.href)}
                 className="relative px-4 py-2 text-sm text-white/60 hover:text-white transition-colors duration-300 group"
               >
                 {link.label}
@@ -59,7 +72,7 @@ export default function Navbar() {
               </a>
             ))}
             <a
-              href={navbar.ctaHref}
+              href={resolveHref(navbar.ctaHref)}
               className="ml-4 px-5 py-2.5 text-sm font-medium bg-primary/10 text-primary border border-primary/20 rounded-lg hover:bg-primary hover:text-white transition-all duration-300"
             >
               {navbar.ctaLabel}
@@ -88,7 +101,7 @@ export default function Navbar() {
             {navLinks.map((link, i) => (
               <motion.a
                 key={link.href}
-                href={link.href}
+                href={resolveHref(link.href)}
                 onClick={() => setMobileOpen(false)}
                 initial={{ opacity: 0, y: 20 }}
                 animate={{ opacity: 1, y: 0 }}
@@ -100,7 +113,7 @@ export default function Navbar() {
               </motion.a>
             ))}
             <motion.a
-              href={navbar.ctaHref}
+              href={resolveHref(navbar.ctaHref)}
               onClick={() => setMobileOpen(false)}
               initial={{ opacity: 0, y: 20 }}
               animate={{ opacity: 1, y: 0 }}

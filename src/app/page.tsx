@@ -4,8 +4,6 @@ import LoadingScreen from "@/components/LoadingScreen";
 import Navbar from "@/components/Navbar";
 import Hero from "@/components/Hero";
 import About from "@/components/About";
-import Portfolio from "@/components/Portfolio";
-import PortfolioVideos from "@/components/PortfolioVideos";
 import Services from "@/components/Services";
 import Process from "@/components/Process";
 import Contact from "@/components/Contact";
@@ -24,12 +22,6 @@ export default async function Home() {
       <main>
         <Hero />
         <About />
-        {/* Âncora do menu "Portfólio": engloba projetos (Destaques) e vídeos,
-            para o link funcionar mesmo sem projetos cadastrados. */}
-        <div id="portfolio">
-          <Portfolio />
-          <PortfolioVideos />
-        </div>
         <Services />
         <Process />
         <Contact />
