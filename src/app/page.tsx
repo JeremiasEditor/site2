@@ -24,8 +24,12 @@ export default async function Home() {
       <main>
         <Hero />
         <About />
-        <Portfolio />
-        <PortfolioVideos />
+        {/* Âncora do menu "Portfólio": engloba projetos (Destaques) e vídeos,
+            para o link funcionar mesmo sem projetos cadastrados. */}
+        <div id="portfolio">
+          <Portfolio />
+          <PortfolioVideos />
+        </div>
         <Services />
         <Process />
         <Contact />

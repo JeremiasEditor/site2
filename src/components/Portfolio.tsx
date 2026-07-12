@@ -83,7 +83,7 @@ export default function Portfolio() {
   const projectStyle = projectColors[currentIndex % projectColors.length];
 
   return (
-    <section id="portfolio" className="relative py-32 overflow-hidden">
+    <section className="relative py-32 overflow-hidden">
       <div className="absolute inset-0 bg-[radial-gradient(ellipse_at_bottom_left,rgba(255,27,27,0.05)_0%,transparent_60%)]" />
 
       <div ref={ref} className="relative z-10 max-w-7xl mx-auto px-6">
