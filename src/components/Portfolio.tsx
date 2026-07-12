@@ -74,8 +74,13 @@ export default function Portfolio() {
     setActiveIndex((i) => (i - 1 + projects.length) % projects.length);
   const next = () => setActiveIndex((i) => (i + 1) % projects.length);
 
-  const project = projects[activeIndex];
-  const projectStyle = projectColors[activeIndex % projectColors.length];
+  // Sem projetos cadastrados, a seção não é exibida (evita quebrar a página).
+  if (projects.length === 0) return null;
+
+  // Mantém um índice válido mesmo depois de remover projetos.
+  const currentIndex = activeIndex < projects.length ? activeIndex : 0;
+  const project = projects[currentIndex];
+  const projectStyle = projectColors[currentIndex % projectColors.length];
 
   return (
     <section id="portfolio" className="relative py-32 overflow-hidden">
@@ -130,7 +135,7 @@ export default function Portfolio() {
           <div className="relative overflow-hidden rounded-3xl glass border border-white/[0.06]">
             <AnimatePresence mode="wait">
               <motion.div
-                key={activeIndex}
+                key={currentIndex}
                 initial={{ opacity: 0, x: 60 }}
                 animate={{ opacity: 1, x: 0 }}
                 exit={{ opacity: 0, x: -60 }}
@@ -277,7 +282,7 @@ export default function Portfolio() {
                   key={i}
                   onClick={() => setActiveIndex(i)}
                   className={`transition-all duration-300 rounded-full ${
-                    i === activeIndex
+                    i === currentIndex
                       ? "w-8 h-2 bg-primary"
                       : "w-2 h-2 bg-white/20 hover:bg-white/40"
                   }`}
@@ -288,7 +293,7 @@ export default function Portfolio() {
 
             {/* Counter */}
             <span className="text-white/30 text-sm font-mono">
-              {String(activeIndex + 1).padStart(2, "0")} /{" "}
+              {String(currentIndex + 1).padStart(2, "0")} /{" "}
               {String(projects.length).padStart(2, "0")}
             </span>
           </div>
@@ -300,7 +305,7 @@ export default function Portfolio() {
                 key={i}
                 onClick={() => setActiveIndex(i)}
                 className={`relative rounded-xl overflow-hidden glass p-4 text-left transition-all duration-300 ${
-                  i === activeIndex
+                  i === currentIndex
                     ? "border-primary/40 bg-primary/5"
                     : "hover:border-white/10 hover:bg-white/[0.02]"
                 }`}
@@ -308,13 +313,13 @@ export default function Portfolio() {
                 <div className="flex items-center gap-3">
                   <div
                     className={`w-8 h-8 rounded-lg bg-primary/10 flex items-center justify-center flex-shrink-0 ${
-                      i === activeIndex ? "bg-primary/20" : ""
+                      i === currentIndex ? "bg-primary/20" : ""
                     }`}
                   >
                     <Star
                       size={14}
                       className={
-                        i === activeIndex
+                        i === currentIndex
                           ? "text-primary fill-primary"
                           : "text-white/30"
                       }
@@ -323,7 +328,7 @@ export default function Portfolio() {
                   <div className="min-w-0">
                     <p
                       className={`text-sm font-semibold truncate ${
-                        i === activeIndex ? "text-white" : "text-white/50"
+                        i === currentIndex ? "text-white" : "text-white/50"
                       }`}
                     >
                       {p.client}
