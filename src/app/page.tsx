@@ -14,8 +14,8 @@ import WhatsAppButton from "@/components/WhatsAppButton";
 
 export const dynamic = "force-dynamic";
 
-export default function Home() {
-  const content = getContent();
+export default async function Home() {
+  const content = await getContent();
 
   return (
     <ContentProvider content={content}>

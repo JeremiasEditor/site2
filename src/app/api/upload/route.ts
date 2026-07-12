@@ -1,25 +1,16 @@
 import { NextRequest, NextResponse } from "next/server";
-import * as fs from "fs";
-import * as path from "path";
 import { isAuthenticated } from "@/lib/auth.server";
+import { saveMediaFile } from "@/lib/media.server";
 
-// Pasta pública onde os uploads (ex.: vídeo de fundo) são armazenados
-const uploadsDir = path.join(process.cwd(), "public", "uploads");
+export const runtime = "nodejs";
+export const dynamic = "force-dynamic";
 
-function ensureDir() {
-  if (!fs.existsSync(uploadsDir)) {
-    fs.mkdirSync(uploadsDir, { recursive: true });
-  }
-}
-
-// POST - Faz upload de um arquivo (vídeo) vindo do computador do admin
+// POST - Faz upload de um vídeo (ex.: vídeo de fundo) para o Volume persistente
 export async function POST(request: NextRequest) {
   try {
     if (!isAuthenticated(request)) {
       return NextResponse.json({ error: "Não autorizado" }, { status: 401 });
     }
-
-    ensureDir();
 
     const formData = await request.formData();
     const file = formData.get("file") as File | null;
@@ -43,12 +34,9 @@ export async function POST(request: NextRequest) {
 
     const safeName = file.name.replace(/[^a-zA-Z0-9._-]/g, "_");
     const fileName = `${Date.now()}-${safeName}`;
-    fs.writeFileSync(path.join(uploadsDir, fileName), buffer);
+    const url = saveMediaFile(fileName, buffer);
 
-    return NextResponse.json(
-      { url: `/uploads/${fileName}`, fileName },
-      { status: 201 }
-    );
+    return NextResponse.json({ url, fileName }, { status: 201 });
   } catch (error) {
     console.error("Error uploading file:", error);
     return NextResponse.json(

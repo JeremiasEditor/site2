@@ -1,51 +1,39 @@
 import { NextRequest, NextResponse } from "next/server";
-import * as fs from "fs";
-import * as path from "path";
+import { isAuthenticated } from "@/lib/auth.server";
+import { saveMediaFile, deleteMediaFile } from "@/lib/media.server";
+import {
+  listVideos,
+  addVideo,
+  deleteVideo,
+  VideoRecord,
+} from "@/lib/videos.server";
 
-// Diretório para armazenar vídeos e dados
-const dataDir = path.join(process.cwd(), "public", "portfolio-videos");
-const videosJsonPath = path.join(process.cwd(), "data", "videos.json");
-
-// Garantir que os diretórios existem
-function ensureDirectories() {
-  if (!fs.existsSync(dataDir)) {
-    fs.mkdirSync(dataDir, { recursive: true });
-  }
-  const dataFolder = path.join(process.cwd(), "data");
-  if (!fs.existsSync(dataFolder)) {
-    fs.mkdirSync(dataFolder, { recursive: true });
-  }
-}
+export const runtime = "nodejs";
+export const dynamic = "force-dynamic";
 
 // GET - Listar todos os vídeos
 export async function GET() {
   try {
-    ensureDirectories();
-    
-    if (!fs.existsSync(videosJsonPath)) {
-      return NextResponse.json([]);
-    }
-    
-    const data = fs.readFileSync(videosJsonPath, "utf-8");
-    const videos = JSON.parse(data);
-    return NextResponse.json(videos);
+    return NextResponse.json(await listVideos());
   } catch (error) {
     console.error("Error reading videos:", error);
     return NextResponse.json([]);
   }
 }
 
-// POST - Salvar novo vídeo
+// POST - Salvar novo vídeo (arquivo no Volume, metadados no banco)
 export async function POST(request: NextRequest) {
   try {
-    ensureDirectories();
-    
+    if (!isAuthenticated(request)) {
+      return NextResponse.json({ error: "Não autorizado" }, { status: 401 });
+    }
+
     const formData = await request.formData();
     const file = formData.get("file") as File;
     const title = formData.get("title") as string;
-    const description = formData.get("description") as string;
-    const client = formData.get("client") as string;
-    const type = formData.get("type") as string;
+    const description = (formData.get("description") as string) || "";
+    const client = (formData.get("client") as string) || "";
+    const type = (formData.get("type") as string) || "";
 
     if (!file || !title) {
       return NextResponse.json(
@@ -54,35 +42,26 @@ export async function POST(request: NextRequest) {
       );
     }
 
-    // Salvar arquivo
+    // Grava o arquivo de vídeo no diretório de mídia (Volume).
     const bytes = await file.arrayBuffer();
     const buffer = Buffer.from(bytes);
-    
-    const fileName = `${Date.now()}-${file.name}`;
-    const filePath = path.join(dataDir, fileName);
-    
-    fs.writeFileSync(filePath, buffer);
 
-    // Salvar metadados
-    let videos = [];
-    if (fs.existsSync(videosJsonPath)) {
-      const data = fs.readFileSync(videosJsonPath, "utf-8");
-      videos = JSON.parse(data);
-    }
+    const safeName = file.name.replace(/[^a-zA-Z0-9._-]/g, "_");
+    const fileName = `${Date.now()}-${safeName}`;
+    const url = saveMediaFile(fileName, buffer);
 
-    const newVideo = {
+    const newVideo: VideoRecord = {
       id: Date.now(),
       title,
       description,
       client,
       type,
       fileName,
-      url: `/portfolio-videos/${fileName}`,
+      url,
       uploadedAt: new Date().toISOString(),
     };
 
-    videos.push(newVideo);
-    fs.writeFileSync(videosJsonPath, JSON.stringify(videos, null, 2));
+    await addVideo(newVideo);
 
     return NextResponse.json(newVideo, { status: 201 });
   } catch (error) {
@@ -94,28 +73,19 @@ export async function POST(request: NextRequest) {
   }
 }
 
-// DELETE - Remover vídeo
+// DELETE - Remover vídeo (metadados do banco + arquivo do Volume)
 export async function DELETE(request: NextRequest) {
   try {
-    ensureDirectories();
-    
-    const { id, fileName } = await request.json();
-
-    // Remover arquivo
-    const filePath = path.join(dataDir, fileName);
-    if (fs.existsSync(filePath)) {
-      fs.unlinkSync(filePath);
+    if (!isAuthenticated(request)) {
+      return NextResponse.json({ error: "Não autorizado" }, { status: 401 });
     }
 
-    // Atualizar JSON
-    let videos = [];
-    if (fs.existsSync(videosJsonPath)) {
-      const data = fs.readFileSync(videosJsonPath, "utf-8");
-      videos = JSON.parse(data);
-    }
+    const { id } = await request.json();
+    const removedFileName = await deleteVideo(Number(id));
 
-    videos = videos.filter((v: any) => v.id !== id);
-    fs.writeFileSync(videosJsonPath, JSON.stringify(videos, null, 2));
+    if (removedFileName) {
+      deleteMediaFile(removedFileName);
+    }
 
     return NextResponse.json({ success: true });
   } catch (error) {
