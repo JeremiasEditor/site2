@@ -24,6 +24,7 @@ export default function AdminVideosPage() {
     client: "",
     type: "Portfolio",
     file: null as File | null,
+    thumbnail: null as File | null,
   });
 
   useEffect(() => {
@@ -49,6 +50,21 @@ export default function AdminVideosPage() {
         return;
       }
       setFormData({ ...formData, file });
+    }
+  };
+
+  const handleThumbChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+    if (file) {
+      if (!file.type.startsWith("image/")) {
+        setMessage("A miniatura precisa ser uma imagem");
+        return;
+      }
+      if (file.size > 10 * 1024 * 1024) {
+        setMessage("Miniatura muito grande! Máximo 10MB");
+        return;
+      }
+      setFormData({ ...formData, thumbnail: file });
     }
   };
 
@@ -79,6 +95,9 @@ export default function AdminVideosPage() {
       data.append("description", formData.description);
       data.append("client", formData.client);
       data.append("type", formData.type);
+      if (formData.thumbnail) {
+        data.append("thumbnail", formData.thumbnail);
+      }
 
       const res = await fetch("/api/videos", {
         method: "POST",
@@ -94,12 +113,12 @@ export default function AdminVideosPage() {
         client: "",
         type: "Portfolio",
         file: null,
+        thumbnail: null,
       });
 
-      const fileInput = document.querySelector(
-        'input[type="file"]'
-      ) as HTMLInputElement;
-      if (fileInput) fileInput.value = "";
+      document
+        .querySelectorAll('input[type="file"]')
+        .forEach((el) => ((el as HTMLInputElement).value = ""));
 
       await loadVideos();
     } catch (error) {
@@ -219,6 +238,34 @@ export default function AdminVideosPage() {
                   <p className="text-sm text-green-400 mt-2">
                     ✓ {formData.file.name}
                   </p>
+                )}
+              </div>
+
+              <div>
+                <label className="block text-sm font-medium mb-2">
+                  Miniatura (imagem · opcional)
+                </label>
+                <input
+                  type="file"
+                  accept="image/*"
+                  onChange={handleThumbChange}
+                  className="w-full px-3 py-2 bg-slate-800 border border-slate-700 rounded text-white text-sm focus:outline-none focus:border-red-500 cursor-pointer file:mr-2 file:px-3 file:py-1 file:bg-red-600 file:text-white file:rounded file:border-0 file:cursor-pointer"
+                />
+                <p className="text-xs text-white/40 mt-1">
+                  Se não escolher, o card usa um frame do próprio vídeo.
+                </p>
+                {formData.thumbnail && (
+                  <div className="mt-2 flex items-center gap-2">
+                    {/* eslint-disable-next-line @next/next/no-img-element */}
+                    <img
+                      src={URL.createObjectURL(formData.thumbnail)}
+                      alt="Prévia da miniatura"
+                      className="w-20 h-12 object-cover rounded border border-slate-700"
+                    />
+                    <span className="text-sm text-green-400">
+                      ✓ {formData.thumbnail.name}
+                    </span>
+                  </div>
                 )}
               </div>
 

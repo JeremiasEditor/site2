@@ -18,6 +18,7 @@ export interface VideoRecord {
   type: string;
   fileName: string;
   url: string;
+  thumbnail: string;
   uploadedAt: string;
 }
 
@@ -29,7 +30,7 @@ export async function listVideos(): Promise<VideoRecord[]> {
     await ensureSchema();
     const { rows } = await getPool().query(
       `SELECT id, title, description, client, type,
-              file_name AS "fileName", url, uploaded_at AS "uploadedAt"
+              file_name AS "fileName", url, thumbnail, uploaded_at AS "uploadedAt"
          FROM videos
         ORDER BY uploaded_at DESC`
     );
@@ -57,8 +58,8 @@ export async function addVideo(video: VideoRecord): Promise<VideoRecord> {
     await ensureSchema();
     await getPool().query(
       `INSERT INTO videos
-         (id, title, description, client, type, file_name, url, uploaded_at)
-       VALUES ($1, $2, $3, $4, $5, $6, $7, $8)`,
+         (id, title, description, client, type, file_name, url, thumbnail, uploaded_at)
+       VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9)`,
       [
         video.id,
         video.title,
@@ -67,6 +68,7 @@ export async function addVideo(video: VideoRecord): Promise<VideoRecord> {
         video.type,
         video.fileName,
         video.url,
+        video.thumbnail,
         video.uploadedAt,
       ]
     );
@@ -80,22 +82,28 @@ export async function addVideo(video: VideoRecord): Promise<VideoRecord> {
   return video;
 }
 
-/** Remove um vídeo pelo id e devolve o fileName removido (se existia). */
-export async function deleteVideo(id: number): Promise<string | null> {
+/** Remove um vídeo pelo id e devolve o arquivo e a miniatura removidos. */
+export async function deleteVideo(
+  id: number
+): Promise<{ fileName: string; thumbnail: string } | null> {
   if (dbEnabled()) {
     await ensureSchema();
     const { rows } = await getPool().query(
-      "DELETE FROM videos WHERE id = $1 RETURNING file_name AS \"fileName\"",
+      'DELETE FROM videos WHERE id = $1 RETURNING file_name AS "fileName", thumbnail',
       [id]
     );
-    return rows.length > 0 ? rows[0].fileName : null;
+    return rows.length > 0
+      ? { fileName: rows[0].fileName, thumbnail: rows[0].thumbnail || "" }
+      : null;
   }
 
   // Fallback local.
   const videos = await listVideos();
   const found = videos.find((v) => v.id === id);
   writeLocal(videos.filter((v) => v.id !== id));
-  return found ? found.fileName : null;
+  return found
+    ? { fileName: found.fileName, thumbnail: found.thumbnail || "" }
+    : null;
 }
 
 function writeLocal(videos: VideoRecord[]): void {

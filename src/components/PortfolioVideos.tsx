@@ -12,6 +12,7 @@ interface Video {
   client: string;
   type: string;
   url: string;
+  thumbnail?: string;
   uploadedAt: string;
 }
 
@@ -95,6 +96,16 @@ export default function PortfolioVideos() {
                       } catch {}
                     }}
                   />
+                  {/* Miniatura escolhida no admin (some ao passar o mouse,
+                      revelando o vídeo que começa a tocar). */}
+                  {video.thumbnail && (
+                    // eslint-disable-next-line @next/next/no-img-element
+                    <img
+                      src={video.thumbnail}
+                      alt={video.title}
+                      className="absolute inset-0 w-full h-full object-cover group-hover:opacity-0 transition-opacity duration-300 pointer-events-none"
+                    />
+                  )}
                   {/* Camada escura + ícone de play por cima da prévia */}
                   <div className="absolute inset-0 flex items-center justify-center bg-black/30 group-hover:bg-black/10 transition">
                     <Play

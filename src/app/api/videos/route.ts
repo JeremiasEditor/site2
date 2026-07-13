@@ -34,6 +34,7 @@ export async function POST(request: NextRequest) {
     const description = (formData.get("description") as string) || "";
     const client = (formData.get("client") as string) || "";
     const type = (formData.get("type") as string) || "";
+    const thumbFile = formData.get("thumbnail") as File | null;
 
     if (!file || !title) {
       return NextResponse.json(
@@ -50,6 +51,15 @@ export async function POST(request: NextRequest) {
     const fileName = `${Date.now()}-${safeName}`;
     const url = saveMediaFile(fileName, buffer);
 
+    // Miniatura opcional (imagem escolhida pelo admin).
+    let thumbnail = "";
+    if (thumbFile && thumbFile.size > 0 && thumbFile.type.startsWith("image/")) {
+      const tBytes = await thumbFile.arrayBuffer();
+      const tSafe = thumbFile.name.replace(/[^a-zA-Z0-9._-]/g, "_");
+      const tName = `thumb-${Date.now()}-${tSafe}`;
+      thumbnail = saveMediaFile(tName, Buffer.from(tBytes));
+    }
+
     const newVideo: VideoRecord = {
       id: Date.now(),
       title,
@@ -58,6 +68,7 @@ export async function POST(request: NextRequest) {
       type,
       fileName,
       url,
+      thumbnail,
       uploadedAt: new Date().toISOString(),
     };
 
@@ -81,10 +92,11 @@ export async function DELETE(request: NextRequest) {
     }
 
     const { id } = await request.json();
-    const removedFileName = await deleteVideo(Number(id));
+    const removed = await deleteVideo(Number(id));
 
-    if (removedFileName) {
-      deleteMediaFile(removedFileName);
+    if (removed) {
+      deleteMediaFile(removed.fileName);
+      if (removed.thumbnail) deleteMediaFile(removed.thumbnail);
     }
 
     return NextResponse.json({ success: true });

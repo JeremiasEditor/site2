@@ -60,9 +60,14 @@ export function ensureSchema(): Promise<void> {
           type TEXT DEFAULT '',
           file_name TEXT NOT NULL,
           url TEXT NOT NULL,
+          thumbnail TEXT DEFAULT '',
           uploaded_at TIMESTAMPTZ NOT NULL DEFAULT now()
         );
       `);
+      // Garante a coluna em bancos que já existiam antes deste campo.
+      await p.query(
+        `ALTER TABLE videos ADD COLUMN IF NOT EXISTS thumbnail TEXT DEFAULT ''`
+      );
     })().catch((err) => {
       // Se falhar, permite tentar de novo na próxima chamada.
       schemaReady = null;
