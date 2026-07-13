@@ -49,8 +49,8 @@ export default function PortfolioVideos() {
 
         <div className="relative z-10 max-w-7xl mx-auto px-6">
           <motion.div
-            initial={{ opacity: 0, y: 30 }}
-            animate={{ opacity: 1, y: 0 }}
+            initial={{ y: 30 }}
+            animate={{ y: 0 }}
             transition={{ duration: 0.6 }}
             className="text-center mb-12"
           >
@@ -70,8 +70,8 @@ export default function PortfolioVideos() {
             {videos.map((video, idx) => (
               <motion.div
                 key={video.id}
-                initial={{ opacity: 0, y: 20 }}
-                animate={{ opacity: 1, y: 0 }}
+                initial={{ y: 20 }}
+                animate={{ y: 0 }}
                 transition={{ duration: 0.6, delay: idx * 0.1 }}
                 onClick={() => setSelectedVideo(video)}
                 className="group relative cursor-pointer"
