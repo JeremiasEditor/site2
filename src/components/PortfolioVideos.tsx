@@ -77,12 +77,29 @@ export default function PortfolioVideos() {
                 className="group relative cursor-pointer"
               >
                 <div className="relative aspect-video rounded-lg overflow-hidden bg-slate-900 border border-slate-800 hover:border-red-500/50 transition">
-                  {/* Thumbnail com gradient */}
-                  <div className="absolute inset-0 bg-gradient-to-br from-red-500/20 to-slate-900/50 flex items-center justify-center group-hover:from-red-500/30 transition">
-                    <div className="absolute inset-0 bg-black/40 group-hover:bg-black/30 transition" />
+                  {/* Prévia: frame do próprio vídeo (toca ao passar o mouse) */}
+                  <video
+                    src={`${video.url}#t=0.5`}
+                    muted
+                    loop
+                    playsInline
+                    preload="metadata"
+                    className="absolute inset-0 w-full h-full object-cover"
+                    onMouseEnter={(e) => {
+                      e.currentTarget.play().catch(() => {});
+                    }}
+                    onMouseLeave={(e) => {
+                      e.currentTarget.pause();
+                      try {
+                        e.currentTarget.currentTime = 0.5;
+                      } catch {}
+                    }}
+                  />
+                  {/* Camada escura + ícone de play por cima da prévia */}
+                  <div className="absolute inset-0 flex items-center justify-center bg-black/30 group-hover:bg-black/10 transition">
                     <Play
                       size={48}
-                      className="text-white group-hover:scale-110 transition relative z-10"
+                      className="text-white/90 drop-shadow-lg group-hover:scale-110 transition relative z-10"
                     />
                   </div>
 
