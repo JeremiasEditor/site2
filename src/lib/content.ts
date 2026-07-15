@@ -69,6 +69,8 @@ export interface PortfolioContent {
   categories: string[];
   projects: PortfolioProject[];
   ytjobsHref: string;
+  channelHref: string;
+  channelLabel: string;
 }
 
 export interface PortfolioVideosContent {
@@ -263,6 +265,8 @@ export const defaultContent: SiteContent = {
       },
     ],
     ytjobsHref: "https://www.ytjobs.com/",
+    channelHref: "https://ytjobs.co/talent/vitrine/431900",
+    channelLabel: "Ver canal no YouTube",
   },
   portfolioVideos: {
     sectionLabel: "Vídeos em Destaque",

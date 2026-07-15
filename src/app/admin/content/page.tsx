@@ -695,6 +695,18 @@ export default function AdminContentPage() {
               value={c.portfolio.ytjobsHref}
               onChange={(v) => set(["portfolio", "ytjobsHref"], v)}
             />
+            <Field
+              label="Botão do canal — texto"
+              value={c.portfolio.channelLabel}
+              onChange={(v) => set(["portfolio", "channelLabel"], v)}
+              placeholder="Ex: Ver canal no YouTube"
+            />
+            <Field
+              label="Botão do canal — link (vazio = oculta o botão)"
+              value={c.portfolio.channelHref}
+              onChange={(v) => set(["portfolio", "channelHref"], v)}
+              placeholder="https://..."
+            />
           </div>
 
           <div className="space-y-3">
